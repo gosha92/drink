@@ -126,9 +126,9 @@ var Animation = function() {
 					e.image.animate({opacity: 1}, 100, animation);
 					break;
 				case 'disappear':
-					e.images[0].animate({ opacity: 0 }, 500, animation);
+					e.images[0].animate({ opacity: 0 }, 1000, animation);
 					for (var i = 1; i < e.images.length; ++i) {
-						e.images[i].animate({ opacity: 0 }, 500);
+						e.images[i].animate({ opacity: 0 }, 1000);
 					}
 					break;
 			}
