@@ -2,7 +2,7 @@ function rand(min, max){return Math.floor(Math.random() * (max - min + 1)) + min
 function isIE78(){if (!$.support.leadingWhitespace) return true; return false;}
 var notIE = !isIE78();
 
-playersNames = [ 'Токен', 'Айк', 'Кайл','Картман', 'Баттерс', 'Стэн' ];
+var playersNames = [ 'Токен', 'Айк', 'Кайл', 'Картман', 'Баттерс', 'Стэн' ];
 
 /*  Колода  */
 var Deck = function() {
@@ -39,14 +39,16 @@ var Deck = function() {
 		var d = Math.floor(52 / n);
 		var r = 52 % n;
 		var players = [];
+		var p = 5; // Индекс в PlayersNames
 		for (var left = 0, right = d; n; --n) {
 			if (r) {
 				++right;
 				--r;
 			}
-			players.push(new Player(cards.slice(left, right), playersNames.pop(), placeholders.shift()));
+			players.push(new Player(cards.slice(left, right), playersNames[p], placeholders.shift()));
 			left = right;
 			right += d;
+			--p;
 		}
 		return players;
 	}
@@ -62,7 +64,7 @@ var Player = function(cards, name, placeholder) {
 	var playerName = $(placeholder).find('.player-name')[0];
 	playerName.innerHTML = name;
 	/* */
-	this.getCard = function(blind) { // Взять карту у игрока (шапкой вверх)
+	this.getCard = function(blind) { // Взять карту у игрока (шапкой_вверх)
 		var card = cards.pop();
 		if (card) {
 			if (blind) {
@@ -83,20 +85,24 @@ var Player = function(cards, name, placeholder) {
 	}
 	this.giveCards = function(c) { // Дать игроку список карт
 		cards = c.concat(cards);
+		playerCounter.innerHTML = cards.length;
+		playerText.innerHTML = '+' + c.length;
 		var f = function(){
-			playerCounter.innerHTML = cards.length;
-			playerText.innerHTML = '+' + c.length;
 			$(playerText).animate({ opacity: 1 }, 400);
 		}
 		animation.addFunction(f);
 	}
 	this.makeLooser = function() { // Сделать игрока проигравшим
-		//console.log( name + ' is looser...' );
+		if (this.isUser) {
+			$('#loose-box').css('visibility', 'visible');
+		}
 		$(playerImage).animate({ opacity: 0 }, 2000);
 		$(playerName).animate({ opacity: 0 }, 2000);
 	}
 	this.makeWinner = function() { // Сделать игрока победителем
-		//console.log('AND THE WINNER IS ' + name);
+		if (this.isUser) {
+			$('#win-box').css('visibility', 'visible');
+		}
 	}
 	this.amountOfCards = function() { // Количество карт у игрока
 		return cards.length;
@@ -171,26 +177,34 @@ var Animation = function() {
 /*  Игра  */
 var Game = function(n, playerName) {
 	/* */
-	var table = []; // Все карты на столе
-	var deck = new Deck();
-	/* */
 	playerName = $.trim(playerName);
 	if (playerName) {
-		playersNames = [ 'Токен', 'Айк', 'Кайл','Картман', 'Баттерс', playerName ];
-		$('.player-placeholder').find('img')[3].src = 'img/avatars/user.png'
+		playersNames[5] = playerName;
+		$('#player-avatar').attr('src', 'img/avatars/user.png?rnd=' + rand(1, 100000));
+		$('#player-image').css('background', '#37414B');
 	} else {
-		playersNames = [ 'Токен', 'Айк', 'Кайл','Картман', 'Баттерс', 'Стэн' ];
-		$('.player-placeholder').find('img')[3].src = 'img/avatars/3.png'
+		playersNames[5] = 'Стэн';
+		$('#player-avatar').attr('src', 'img/avatars/3.png?rnd=' + rand(1, 100000));
+		$('#player-image').css('background', '#FFFABB');
 	}
+	/* */
 	$('.player-placeholder').css('visibility', 'hidden');
 	$('.player-placeholder').css('opacity', 1);
 	$('.player-text').css('opacity', 0);
 	$('.player-name').css('opacity', 1);
 	$('.player-image').css('opacity', 1);
+	$('.card-img').remove();
+	$('#podskazka').css('visibility', 'visible');
 	/* */
+	var table = []; // Все карты на столе
+	var deck = new Deck();
 	var players = deck.deal(n);
+	if (playerName) {
+		players[0].isUser = true;
+	}
 	var war = false;
 	var result = false;
+	var winner = false;
 	/* */
 	var giveAndCompareCards = function() { // Положить карты на стол и сравнить их
 		var max = -1; // Определение максимума
@@ -236,7 +250,14 @@ var Game = function(n, playerName) {
 	}
 	/* */
 	this.nextRound = function() { // Провести один раунд
+		$('#podskazka').css('visibility', 'hidden');
 		animation.makeAnimation();
+		if (winner) {
+			$('.text-box-wrap').css('visibility', 'hidden');
+			$('#new-game-box').css('visibility', 'visible');
+			$('#name').focus();
+			return false;
+		}
 		if (war) { // Идет "война"
 			for (var i in players) {
 				card = players[i].getCard(true);
@@ -267,31 +288,31 @@ var Game = function(n, playerName) {
 /* */
 $(document).ready(function(){
 	var game = undefined;
-	$('#next-move').click(function() {
+	$('.text-box').click(function(e){
+		e.stopPropagation();
+	});
+	var nextR = function(e){
 		if (game) {
-			$('#new-game-box').css('visibility', 'hidden');
-			$('#rules-box').css('visibility', 'hidden');
-			if (!$(this).hasClass('active')) {
+			$('.text-box-wrap').css('visibility', 'hidden');
+			if (!$('#next-move').hasClass('active')) {
 				game.nextRound();
 			}
 		} else {
+			$('.text-box-wrap').css('visibility', 'hidden');
 			$('#new-game-box').css('visibility', 'visible');
-			$('#rules-box').css('visibility', 'hidden');
+			$('#name').focus();
 		}
-	});
+	};
+	$('.content').click(nextR);
+	$('#next-move').click(nextR);
 	$('#new-game').click(function(){
+		$('.text-box-wrap').css('visibility', 'hidden');
 		$('#new-game-box').css('visibility', 'visible');
-		$('#rules-box').css('visibility', 'hidden');
+		$('#name').focus();
 	});
 	$('#rules').click(function(){
-		$('#new-game-box').css('visibility', 'hidden');
+		$('.text-box-wrap').css('visibility', 'hidden');
 		$('#rules-box').css('visibility', 'visible');
-	});
-	$('#rules-box-close').click(function(){
-		$('#rules-box').css('visibility', 'hidden');
-	});
-	$('#new-game-box-close').click(function(){
-		$('#new-game-box').css('visibility', 'hidden');
 	});
 	var players;
 	var radios = $('input[type=radio]');
@@ -302,5 +323,11 @@ $(document).ready(function(){
 			if (radios[i].checked)
 				players = radios[i].value;
 		game = new Game(players, $('#name').val());
+		return false;
 	});
+	$('.close').click(function(){
+		$(this).parent().parent().css('visibility', 'hidden');
+	})
+	/* */
+	$('#name').focus();
 });

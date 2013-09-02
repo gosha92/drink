@@ -23,6 +23,7 @@
 			</div>
 		</div>
 		<div class="content">
+
 			<div class="player-placeholder left">
 				<div class="player-image">
 					<img src="img/avatars/1.png" alt="avatar">
@@ -32,47 +33,59 @@
 				<div class="player-text"></div>
 				<div class="player-name"></div>
 			</div>
+
 			<div class="player-placeholder right">
 				<div class="player-image">
 					<img src="img/avatars/2.png" alt="avatar">
-					<div class="player-counter">22</div>
+					<div class="player-counter"></div>
 				</div>
 				<div class="player-text"></div>
 				<div class="player-name"></div>
 			</div>
+
 			<div class="player-placeholder left">
-				<div class="player-image">
-					<img src="img/avatars/3.png" alt="avatar">
-					<div class="player-counter">2</div>
+				<div class="player-image" id="player-image">
+					<img src="img/avatars/3.png" alt="avatar" id="player-avatar">
+					<div class="player-counter"></div>
 				</div>
 				<div class="player-text"></div>
-				<div class="player-name">Пятачок</div>
+				<div class="player-name"></div>
 			</div>
+
 			<div class="player-placeholder right">
 				<div class="player-image">
 					<img src="img/avatars/4.png" alt="avatar">
-					<div class="player-counter">1</div>
+					<div class="player-counter"></div>
 				</div>
 				<div class="player-text"></div>
-				<div class="player-name">Кенга</div>
+				<div class="player-name"></div>
 			</div>
+
 			<div class="player-placeholder left">
 				<div class="player-image">
 					<img src="img/avatars/5.png" alt="avatar">
-					<div class="player-counter">12</div>
+					<div class="player-counter"></div>
 				</div>
 				<div class="player-text"></div>
-				<div class="player-name">Иа-Иа</div>
+				<div class="player-name"></div>
 			</div>
+
 			<div class="player-placeholder right">
 				<div class="player-image">
 					<img src="img/avatars/6.png" alt="avatar">
-					<div class="player-counter">6</div>
+					<div class="player-counter"></div>
 				</div>
 				<div class="player-text"></div>
 				<div class="player-name">Тигра</div>
 			</div>
+			
 			<div style="clear: both;"></div>
+
+			<div class="text-box-wrap" id="podskazka">
+				<div class="podskazka">
+					<b>Кликните в любом месте на столе</b>, чтобы раздать игрокам карты, или нажмите кнопку "Следующий ход".
+				</div>
+			</div>
 
 			<div class="text-box-wrap" id="rules-box">
 				<div class="text-box">
@@ -95,11 +108,27 @@
 						<input type="radio" name="players" value="5"> 5 <br>
 						<input type="radio" name="players" value="6" checked> 6 <br>
 						<h5>Ваше имя</h5>
-						<input type="text" id="name" style="">
+						<input type="text" id="name">
 					</form>
 					<p>Оставьте это поле пустым, если не хотите указывать ваше имя.</p>
 					<br>
 					<a class="menu-item right" href="#" id="new-game-start">Начать</a>
+				</div>
+			</div>
+
+			<div class="text-box-wrap" id="loose-box">
+				<div class="text-box">
+					<a href="#" class="close right" id="loose-box-close">закрыть</a>
+					<h3>Поражение...</h3>
+					<p>К сожалению, вы проиграли. Попробуйте снова или смотрите, как ваши сопернини продолжают сражаться.</p>
+				</div>
+			</div>
+
+			<div class="text-box-wrap" id="win-box">
+				<div class="text-box">
+					<a href="#" class="close right" id="win-box-close">закрыть</a>
+					<h3>Победа!</h3>
+					<p>Поздравляем, вы победили. Попробуйте сыграть снова.</p>
 				</div>
 			</div>
 
